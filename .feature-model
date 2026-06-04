@@ -1,0 +1,22 @@
+FmWorkflow
+    Frontend
+        Theme
+            LightMode
+                ColorPalette
+        Layout
+            Sidebar
+                TabBar
+            FeatureFilesPanel
+            MainPanel
+                DiffViewer
+                PatchViewer
+        FeatureTree
+        DataFetching
+    FeatureModel
+        GetFeatureModel
+        Summary
+        GitDiff
+        FeatureLocator
+        SummaryStore
+        SummaryApi
+        FileDiffApi
