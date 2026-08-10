@@ -13,7 +13,7 @@ set "OUTPUT_DIR=%SCRIPT_DIR%..\claude-setup"
 REM Parse options
 if "%~1"=="--build" (
   echo Building Agent HAnS...
-  npm run build --prefix "%SCRIPT_DIR%.."
+  call npm run build --prefix "%SCRIPT_DIR%.."
   if errorlevel 1 (
     echo Error: Build failed.
     exit /b 1
