@@ -18,7 +18,7 @@ On EVERY user prompt that results in — or could possibly result in — code ch
 
 > **STOP — do not write or edit any file until steps 0–3 above are complete.** If you find yourself editing code without having completed the worktree check, read the feature model via MCP, and loaded both skills on this prompt, you are violating the workflow.
 
-4. **Write and verify code with annotations**: All code changes MUST include correct embedded feature annotations. After writing, verify that every annotation references a feature that exists in the `.feature-model` and that no changed code is left without annotations.
+4. **Write and verify code with annotations**: All code changes MUST include correct embedded feature annotations. Follow the annotation scope rules: never wrap an entire class or other top-level declaration with `&begin`/`&end`; when a complete class represents a feature, record it in `.feature-to-file` instead. After writing, verify that every annotation references a feature that exists in the `.feature-model` and that no changed code is left without annotations.
 
 5. **Display summary**: After all changes are complete, ALWAYS display a summary using the MCP server (`agent-hans_summary-gui`), including all features that were added, modified, or removed.
 

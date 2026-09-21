@@ -2,4 +2,5 @@ node_modules/
 public/
 frontend/node_modules/
 claude-setup/
+codex-setup/
 build/
