@@ -350,7 +350,8 @@ const ANNOTATION_REGEX = /&(?:begin|end|line)\[(\w+)\]/g;
 
 /**
  * Scan all tracked files in a project for embedded feature annotations
- * (&begin[X], &end[X], &line[X]) and .feature-to-file mappings.
+ * (&begin[X], &end[X], &line[X]), .feature-to-file mappings,
+ * and .feature-to-folder mappings.
  * Returns a map from feature name to list of relative file paths.
  */
 function scanFeatureAnnotations(projectPath: string): Record<string, string[]> {
@@ -371,13 +372,14 @@ function scanFeatureAnnotations(projectPath: string): Record<string, string[]> {
 
     if (!raw) return {};
 
-    const files = raw.split("\n").filter((f) => f.trim());
+    const files = raw.split("\n").map((f) => f.trim()).filter(Boolean);
 
     for (const relFile of files) {
       const ext = path.extname(relFile).toLowerCase();
 
-      // Parse .feature-to-file mapping files
-      if (path.basename(relFile) === ".feature-to-file") {
+      // Parse file and folder mapping files
+      const mappingType = path.basename(relFile);
+      if (mappingType === ".feature-to-file" || mappingType === ".feature-to-folder") {
         try {
           const content = fs.readFileSync(
             path.join(projectPath, relFile),
@@ -387,20 +389,33 @@ function scanFeatureAnnotations(projectPath: string): Record<string, string[]> {
             .split("\n")
             .map((l) => l.trim())
             .filter((l) => l);
-          // Format: pairs of lines — filename, then feature name
+          // Format: pairs of lines — file/folder name, then feature name
           for (let i = 0; i + 1 < lines.length; i += 2) {
-            const fileName = lines[i];
+            const targetName = lines[i];
             const featureName = lines[i + 1];
-            if (fileName && featureName) {
-              // Resolve file path relative to the .feature-to-file directory
+            if (targetName && featureName) {
+              // Resolve the target relative to the mapping file's directory
               const dir = path.dirname(relFile);
-              const resolvedFile =
-                dir === "." ? fileName : path.posix.join(dir, fileName);
-              addMapping(featureName, resolvedFile);
+              const target = path.posix.normalize(
+                dir === "." ? targetName : path.posix.join(dir, targetName),
+              );
+              if (mappingType === ".feature-to-file") {
+                addMapping(featureName, target);
+              } else {
+                const prefix = target === "." ? "" : `${target.replace(/\/$/, "")}/`;
+                for (const file of files) {
+                  const name = path.posix.basename(file);
+                  if (file.startsWith(prefix) &&
+                      name !== ".feature-to-file" &&
+                      name !== ".feature-to-folder") {
+                    addMapping(featureName, file);
+                  }
+                }
+              }
             }
           }
         } catch {
-          // Skip unreadable .feature-to-file
+          // Skip unreadable mapping files
         }
         continue;
       }

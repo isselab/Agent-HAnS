@@ -10,7 +10,7 @@ At the start of every session, perform these checks before doing any work:
 
 On EVERY user prompt that results in — or could possibly result in — code changes (no matter how small), the primary agent MUST follow this checklist in order. **Do not skip any step, do not reorder steps, do not combine steps.**
 
-**What counts as "code changes"**: Any edit to any file in the project — including CSS-only changes, visual redesigns, configuration updates, dependency changes, file renames, comment edits, and any file tracked by `.feature-to-file` or containing feature annotations. If in doubt, treat it as a code change.
+**What counts as "code changes"**: Any edit to any file in the project — including CSS-only changes, visual redesigns, configuration updates, dependency changes, file renames, comment edits, and any file tracked by `.feature-to-file` or `.feature-to-folder` or containing feature annotations. If in doubt, treat it as a code change.
 
 1. **Read the feature model**: Use the `agent-hans_get-feature-model` MCP tool to retrieve the current feature model. This ensures you are working with the latest state of all features before making any decisions.
 2. **Feature model first**: Load the `feature-model-skill` and determine which features in the .feature-model are affected (added, modified, or removed). **Reload this skill on every prompt, even if it was loaded earlier in this session** — context compression may have removed the instructions.
@@ -20,7 +20,7 @@ On EVERY user prompt that results in — or could possibly result in — code ch
 
 4. **Write and verify code with annotations**: Annotate changed implementation code according to the annotation skill. Imports and class field and property declarations MUST remain unannotated. Do not use line annotations on method declarations or signatures; annotate whole methods with `&begin`/`&end`, including single-line methods. Never wrap an entire class or other top-level declaration with `&begin`/`&end`; when a complete class represents a feature, record it in `.feature-to-file` instead. After writing, verify that every annotation references a feature that exists in the `.feature-model`, that changed implementation code has the appropriate annotation coverage, and that excluded declarations remain unannotated.
 
-   Annotations describe implemented features, not session ownership. Preserve valid existing feature annotations and file mappings. If changed code implements multiple features, retain coverage for all of them at the appropriate scopes. Never label a shared snippet solely with the current feature just because it was edited in this session.
+   Annotations describe implemented features, not session ownership. Preserve valid existing `.feature-to-file`, `.feature-to-folder`, fragment, and line annotations. When adding a mapping pair, append it without deleting or replacing still-valid pairs. A new file or folder mapping does not justify deleting valid fragment or line annotations in covered code. Check the diff to confirm existing mappings and inline annotations remain. If changed code implements multiple features, retain coverage for all of them at the appropriate scopes. Never label a shared snippet solely with the current feature just because it was edited in this session.
 
 5. **Display summary**: After all changes are complete, ALWAYS display a summary using the MCP server (`agent-hans_summary-gui`), including all features that were added, modified, or removed.
 
