@@ -50,6 +50,18 @@ UserManagement
 
 For a class-level relationship, use the same file mapping and do not add an inline class wrapper.
 
+## Shared code and session changes
+
+Annotations describe the features implemented by the code, not which feature motivated the current session's edits.
+
+- Inspect the surrounding implementation and existing annotations before annotating changed code. Preserve existing feature annotations and file mappings while those relationships remain valid.
+- Do NOT relabel a shared method or block solely with the current feature because it was changed in this session. Include all features the annotated code actually implements, including existing responsibilities. Do not add unrelated features merely because they call the code.
+- When the current feature affects only part of an existing method, retain the method's feature block and annotate the relevant statements inside it. Do not extend the current feature's annotation over unrelated code.
+- When the same implementation scope implements multiple features, use a separate annotation for each feature. For a shared method or block, nest matching `&begin[FeatureName]` / `&end[FeatureName]` pairs and close them in reverse order. For a shared executable statement, use separate `&line[FeatureName]` markers in its comment. Do not combine feature names inside one marker.
+- These rules do not override the exclusions for imports, class fields, and properties or the requirement to use fragment syntax for whole methods.
+
+For example, if the current session adds or changes Google login in `authenticateUser` below, keep the `Authentication` method block and apply `GoogleIntegration` only to the relevant statement. The method still implements authentication as a whole.
+
 ## Example of code with annotations
 
 class User {
