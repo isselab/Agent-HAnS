@@ -1,11 +1,11 @@
 ---
 name: embedded-feature-annotation-skill
-description: Create or update embedded feature annotations
+description: Create or update embedded feature annotations based on implemented responsibilities
 ---
 
 # Feature annotation syntax
 
-Embedded feature anotations MUST follow the following syntax.
+Embedded feature annotations MUST follow the following syntax.
 Features can be annotated using both fragment and line syntax:
 
 ## Fragment
@@ -63,10 +63,23 @@ Annotations describe the features implemented by the code, not which feature mot
 - Inspect the surrounding implementation and existing annotations before annotating changed code. Preserve existing feature annotations and file and folder mappings while those relationships remain valid. Adding or changing a file or folder mapping does not replace valid fragment or line annotations in the covered code. Keep those annotations where their feature relationships remain valid.
 - Do NOT relabel a shared method or block solely with the current feature because it was changed in this session. Include all features the annotated code actually implements, including existing responsibilities. Do not add unrelated features merely because they call the code.
 - When the current feature affects only part of an existing method, retain the method's feature block and annotate the relevant statements inside it. Do not extend the current feature's annotation over unrelated code.
-- When the same implementation scope implements multiple features, use a separate annotation for each feature. For a shared method or block, nest matching `&begin[FeatureName]` / `&end[FeatureName]` pairs and close them in reverse order. For a shared executable statement, use separate `&line[FeatureName]` markers in its comment. Do not combine feature names inside one marker.
+- When the same implementation scope implements multiple features, use a separate annotation for each feature. For a shared method or block, nest matching `&begin[FeatureName]` / `&end[FeatureName]` pairs and close them in reverse order. For a shared executable statement, use separate `&line[FeatureName]` annotations in its comment.
 - These rules do not override the exclusions for imports, class fields, and properties or the requirement to use fragment syntax for whole methods.
 
 For example, if the current session adds or changes Google login in `authenticateUser` below, keep the `Authentication` method block and apply `GoogleIntegration` only to the relevant statement. The method still implements authentication as a whole.
+
+## UI composition and feature-specific arguments
+
+Adding a child, argument, property, style, or callback does not give its feature exclusive ownership of a UI statement. Line annotations cover whole statements, not individual arguments.
+
+- Preserve the component's existing responsibility through enclosing annotations, mappings, or separate line annotations. Add the contribution's feature at the smallest meaningful scope. If existing coverage encloses the statement, only the added feature needs a line annotation.
+- Annotate directly implemented behavior. Shared layout, mounting, ancestor containers, and later object uses do not inherit a child's features merely by referencing it. Do not invent generic UI features.
+- For example, adding `chips` to an `HBox` contributes `AssignTaskLabels`, and passing `color` to a label constructor contributes `LabelColors`. Retain coverage for row composition and label creation; alignment and `labels.add(label)` do not automatically gain those features.
+- Use separate feature-specific statements where natural. Do not refactor correct code solely for annotation boundaries.
+
+## Review changed annotations
+
+Review changed annotations together with enclosing annotations and mappings. Confirm each feature describes implemented behavior and shared statements retain existing and added feature coverage. If meaningful behavior would remain without the added feature, the scope is shared; removing that feature may require adjusting arguments rather than deleting the statement. Check that layout and later uses have not inherited unrelated feature annotations.
 
 ## Example of code with annotations
 
